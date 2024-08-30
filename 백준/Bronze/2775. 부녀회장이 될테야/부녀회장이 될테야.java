@@ -13,14 +13,16 @@ public class Main {
             int dp[][] = new int[k+1][n+1];
 
 
-            for(int j = 1; j <= n; j++)
+            for(int j = 1; j <= n; j++) {
                 dp[0][j] = j;
+            }
+            for(int j = 1; j <= k; j++)
+                dp[j][1] = 1;
+
 
             for(int j = 1; j <= k; j++){
-                for(int a = 1; a <= n; a++){
-                    for(int b = 1; b <= a; b++){
-                        dp[j][a] += dp[j-1][b];
-                    }
+                for(int a = 2; a <= n; a++) {
+                    dp[j][a] = dp[j-1][a] + dp[j][a-1];
                 }
             }
             System.out.println(dp[k][n]);
