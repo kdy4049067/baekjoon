@@ -5,6 +5,7 @@ class Solution {
         int answer = 0;
         ArrayList<Integer> countList = new ArrayList<>();
         ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+        
         for(int i = 0; i <= cards.length; i++){
             list.add(new ArrayList());
         }
