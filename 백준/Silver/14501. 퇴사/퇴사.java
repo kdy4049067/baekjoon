@@ -1,29 +1,27 @@
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Main {
-	
-	static int max=0;
-	public static void main(String[] args) throws IOException {
-		Scanner sc = new Scanner(System.in);
-		int Case = sc.nextInt();
-		int[] T = new int[Case];
-		int[] P = new int[Case];
-		for(int i=0;i<Case;i++) {
-			T[i]=sc.nextInt();	
-			P[i]=sc.nextInt();	
-		}
-		
-		int[] dp = new int[Case+1];
-		
-		for(int i=0;i<Case;i++) {
-			 if(i+T[i]<=Case) {	
-				 dp[i+T[i]]=Math.max(dp[i+T[i]],dp[i]+P[i]);	
-			 }
-			 dp[i+1]=Math.max(dp[i+1],dp[i]);	
-			 
-		}	
-		System.out.println(dp[Case]);	
-	}
-	
+
+    public static void main(String[] args)throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int max = 0;
+        int n = Integer.parseInt(br.readLine());
+        int[] dp = new int[n+2];
+
+        for(int i = 1; i <= n; i++){
+            String[] tp = br.readLine().split(" ");
+            int t = Integer.parseInt(tp[0]);
+            int p = Integer.parseInt(tp[1]);
+
+            if(i + t > n+1) continue;
+            for(int j = i + t; j <= n + 1; j++) {
+                dp[j] = Math.max(dp[j], dp[i] + p);
+            }
+        }
+
+        System.out.println(dp[n+1]);
+    }
+
 }
