@@ -1,46 +1,51 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.Arrays;
 
 public class Main {
-    private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public static void main(String[] args) throws IOException {
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-        int ans = Integer.MAX_VALUE;
+    public static void main(String[] args)throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] nm = br.readLine().split(" ");
+        int n = Integer.parseInt(nm[0]);
+        int m = Integer.parseInt(nm[1]);
 
-        int[] memoryArr = new int[n];
-        int[] costArr = new int[n];
-        int[][] dp = new int[n][100001];
+        String[] memory = br.readLine().split(" ");
+        String[] cost = br.readLine().split(" ");
 
-        StringTokenizer st1 = new StringTokenizer(br.readLine());
-        StringTokenizer st2 = new StringTokenizer(br.readLine());
-		
-        for(int i = 0 ; i < n; i++){
-            memoryArr[i] = Integer.parseInt(st1.nextToken());
-            costArr[i] = Integer.parseInt(st2.nextToken());
-        }
+        int[] memories = Arrays.stream(memory)
+                .mapToInt(Integer::parseInt)
+                .toArray();
+        int[] costs = Arrays.stream(cost)
+                .mapToInt(Integer::parseInt)
+                .toArray();
 
+        int[][] dp = new int[n][10001];
+        int answer = Integer.MAX_VALUE;
 
-        for(int i = 0 ; i < n; i++){
-            int cost = costArr[i];
-            int memory = memoryArr[i];
+        for(int i = 0; i < n; i++){
+            int c = costs[i];
+            int mem = memories[i];
 
-			
             for(int j = 0; j <= 10000; j++){
-                if(i == 0) {
-                    if (j >= cost) dp[i][j] = memory;
+                if(i == 0){
+                    if(j >= c) dp[i][j] = mem;
                 }
-                else {
-                    if (j >= cost) dp[i][j] = Math.max(dp[i - 1][j - cost] + memory, dp[i - 1][j]);
-                    else dp[i][j] = dp[i - 1][j];
+                else{
+                    if(j >= c){
+                        dp[i][j] = Math.max(dp[i-1][j], dp[i-1][j-c] + mem);
+                    }
+                    else{
+                        dp[i][j] = dp[i-1][j];
+                    }
                 }
-                if(dp[i][j] >= m) ans = Math.min(ans, j);
+                if(dp[i][j] >= m){
+                    answer = Math.min(answer, j);
+                }
             }
         }
-        System.out.println(ans);
+        System.out.println(answer);
     }
+
 }
