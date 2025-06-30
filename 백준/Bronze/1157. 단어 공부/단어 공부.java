@@ -19,14 +19,14 @@ public class Main {
         }
 
         List<Character> keySet = new ArrayList<>(map.keySet());
+        
+        keySet.sort((c1, c2) -> map.get(c2).compareTo(map.get(c1)));
 
         if(keySet.size() == 1){
             System.out.println(keySet.get(0));
             return;
         }
         
-        keySet.sort((c1, c2) -> map.get(c2).compareTo(map.get(c1)));
-
         if(Objects.equals(map.get(keySet.get(0)), map.get(keySet.get(1)))){
             System.out.println("?");
             return;
