@@ -1,95 +1,98 @@
-import java.util.*;
- 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
 public class Main {
-    
-    static int n, l, r;
-    static int[][] board;
-    static boolean[][] visited;
-    static int[] dx = {0, 1, 0, -1};
-    static int[] dy = {1, 0, -1, 0};
-    static ArrayList<Node> list; //인구 이동이 필요한 노드 리스트
- 
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);    
- 
-        n = scan.nextInt();
-        l = scan.nextInt();
-        r = scan.nextInt();
-        
-        board = new int[n][n];
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
-                board[i][j] = scan.nextInt();
+
+    static final int[] dx = new int[]{-1, 1, 0, 0};
+    static final int[] dy = new int[]{0, 0, -1, 1};
+    private static int n;
+    private static int[][] map;
+    private static boolean[][] visited;
+    private static int result = 0;
+    static ArrayList<int[]> list;
+
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        n = Integer.parseInt(st.nextToken());
+        int l = Integer.parseInt(st.nextToken());
+        int r = Integer.parseInt(st.nextToken());
+
+        map = new int[n][n];
+
+        for(int i = 0; i < n; i++){
+            st = new StringTokenizer(br.readLine());
+            for(int j = 0; j < n; j++){
+                map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        
-        System.out.println(move());
-    }
-    
-    public static int move() { //더 이상 인구이동이 일어나지 않을 때까지 반복
-        int result = 0;
+
         while(true) {
-            boolean isMove = false;
             visited = new boolean[n][n];
-            for(int i = 0; i < n; i++) {
-                for(int j = 0; j < n; j++) {
+            boolean ch = false;
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < n; j++){
                     if(!visited[i][j]) {
-                        int sum = bfs(i, j); //bfs탐색으로 열릴 수 있는 국경선 확인 하며 인구 이동할 총 인구수 반환
-                        if(list.size() > 1) {
-                            changePopulation(sum); //열린 국경선 내의 노드들 인구 변경
-                            isMove = true;
-                        }    
+                        int result = bfs(i, j, l, r);
+                        if (list.size() > 1) {
+                            calculate(result);
+                            ch = true;
+                        }
                     }
                 }
             }
-            if(!isMove) return result;;
+
+            if(!ch){
+                System.out.println(result);
+                return;
+            }
             result++;
         }
     }
-    
-    public static int bfs(int x, int y) {
-        Queue<Node> q = new LinkedList<>();
+
+    public static int bfs(int startX, int startY, int l, int r){
+        Queue<int[]> q = new LinkedList<>();
         list = new ArrayList<>();
-        
-        q.offer(new Node(x, y));
-        list.add(new Node(x, y));
-        visited[x][y] = true;
-        
-        int sum = board[x][y];
-        while(!q.isEmpty()) {
-            Node current = q.poll();
-            
-            for(int i = 0; i < 4; i++) {
-                int nx = current.x + dx[i];
-                int ny = current.y + dy[i];
-                if(nx >= 0 && ny >= 0 && nx < n && ny < n && !visited[nx][ny]) {
-                    int diff = Math.abs(board[current.x][current.y] - board[nx][ny]);
-                    if(l <= diff && diff <= r) {
-                        q.offer(new Node(nx, ny));
-                        list.add(new Node(nx, ny));
-                        sum += board[nx][ny];
-                        visited[nx][ny] = true;
-                    }        
+
+        int sum = map[startX][startY];
+
+        q.add(new int[]{startX, startY});
+        list.add(new int[]{startX, startY});
+        visited[startX][startY] = true;
+
+        while (!q.isEmpty()) {
+            int[] pos = q.poll();
+            int x = pos[0];
+            int y = pos[1];
+
+            for(int k = 0; k < 4; k++){
+                int moveX = x + dx[k];
+                int moveY = y + dy[k];
+
+                if(moveX < 0 || moveX >= n || moveY < 0 || moveY >= n || visited[moveX][moveY]) continue;
+
+                if(Math.abs((map[x][y]-map[moveX][moveY])) <= r && Math.abs((map[x][y] - map[moveX][moveY])) >= l){
+                    visited[moveX][moveY] = true;
+                    q.add(new int[]{moveX, moveY});
+                    list.add(new int[]{moveX, moveY});
+                    sum += map[moveX][moveY];
                 }
             }
         }
-        return sum;
+
+        return sum / list.size();
     }
-    
-    public static void changePopulation(int sum) {
-        int avg = sum / list.size();
-        for(Node n : list) {
-            board[n.x][n.y] = avg;
+
+    public static void calculate(int result){
+        for(int[] res : list){
+            map[res[0]][res[1]] = result;
         }
     }
-    
-    public static class Node {
-        int x; 
-        int y;
-        
-        public Node(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
+
 }
