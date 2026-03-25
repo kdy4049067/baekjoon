@@ -24,8 +24,8 @@ public class Main {
             }
         }
 
-        int blockX = (block-1) / m;
-        int blockY = (block-1) % m;
+        int blockX = (block-1) / m + 1;
+        int blockY = (block-1) % m + 1;
 
         int[][] dp = new int[n+1][m+1];
         dp[1][1] = 1;
