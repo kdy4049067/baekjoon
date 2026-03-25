@@ -1,76 +1,74 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.PriorityQueue;
+import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
-
+ 
 public class Main {
-
-    private static ArrayList<ArrayList<int[]>> list;
-    private static int result[];
-
-    public static void main(String[] args)throws IOException{
+    static final int INF = 987654321;
+ 
+    public static void main(String[] args) throws NumberFormatException, IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int size = Integer.parseInt(br.readLine());
-        int count = Integer.parseInt(br.readLine());
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         StringTokenizer st;
-        list = new ArrayList<>();
-        result = new int[size+1];
-
-        for(int i = 0; i <= size; i++){
-            list.add(new ArrayList<>());
+ 
+        int N = Integer.parseInt(br.readLine());
+        int M = Integer.parseInt(br.readLine());
+        int[][] arr = new int[N + 1][N + 1];
+ 
+        // 초기값 설정
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= N; j++) {
+                arr[i][j] = INF;
+ 
+                if (i == j) {
+                    arr[i][j] = 0;
+                }
+            }
         }
-
-        for(int i = 0; i < count; i++){
+ 
+        for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int from = Integer.parseInt(st.nextToken());
-            int to = Integer.parseInt(st.nextToken());
-            int val = Integer.parseInt(st.nextToken());
-
-            list.get(from).add(new int[]{to, val});
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+            
+            // 출발 도시와 도착 도시가 같지만 시간이 다른 입력값이 들어올 수 있음.
+            // 예를 들어 "1 4 1"과 "1 4 2"가 입력으로 들어왔으면,
+            // "1 4 1"을 택해야 함.
+            arr[a][b] = Math.min(arr[a][b], c); 
         }
-
-        for(int i = 1; i <= size; i++){
-            solve(i);
-            for(int j = 1; j <= size; j++){
-                if(result[j] == Integer.MAX_VALUE){
-                    System.out.print(0 + " ");
-                }
-                else
-                    System.out.print(result[j] + " ");
-            }
-            if(i == size) break;
-            System.out.println();
-        }
-    }
-
-    private static void solve(int index){
-        Arrays.fill(result, Integer.MAX_VALUE);
-        PriorityQueue<int[]> q = new PriorityQueue<>((int[] o1, int[] o2)->{
-            return o1[1] - o2[1];
-        });
-        q.add(new int[]{index, 0});
-        result[index] = 0;
-
-        while (!q.isEmpty()) {
-            int[] cur = q.poll();
-
-            for(int[] next : list.get(cur[0])){
-                int to = next[0];
-                int val = next[1];
-
-                if(result[to] < cur[1]){
-                    continue;
-                }
-
-                if(result[to] > result[cur[0]] + val){
-                    result[to] = result[cur[0]] + val;
-                    q.add(new int[]{next[0], result[to]});
+ 
+        // 플로이드 와샬 알고리즘
+        for (int k = 1; k <= N; k++) {
+            for (int i = 1; i <= N; i++) {
+                for (int j = 1; j <= N; j++) {
+                    // 최단경로 초기화
+                    if (arr[i][j] > arr[i][k] + arr[k][j]) {
+                        arr[i][j] = arr[i][k] + arr[k][j];
+                    }
                 }
             }
         }
+ 
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= N; j++) {
+                // 갈 수 없는 곳은 0으로 초기화
+                if (arr[i][j] == INF) {
+                    arr[i][j] = 0;
+                }
+ 
+                sb.append(arr[i][j] + " ");
+            }
+            sb.append("\n");
+        }
+ 
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
+        br.close();
     }
-
+ 
 }
