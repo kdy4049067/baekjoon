@@ -1,27 +1,33 @@
 import java.util.*;
+
 class Solution {
-    static final int INF = 100000;
     public int solution(int[][] info, int n, int m) {
-        int size = info.length;
-        int [][] dp = new int [size+1][m];
-        for(int i = 0; i <= size; i++){
-            Arrays.fill(dp[i], INF);
+        int answer = 0;
+    
+        Arrays.sort(info, (int[] o1, int[] o2)->{
+            double ratio1 = (double) o2[0]/o2[1];
+            double ratio2 = (double) o1[0]/o1[1];
+            
+            if(ratio1 == ratio2) return Double.compare(o2[0], o1[0]);
+            else{
+                return Double.compare(ratio1, ratio2);
+            }
+        });
+
+        for(int i = 0; i < info.length; i++){
+            int a = info[i][0];
+            int b = info[i][1];
+            
+            if(m > b) m -= b;
+            else if(n > a){
+                n -= a;
+                answer += a;
+            }
+            else{
+                return -1;
+            }
         }
-        dp[0][0] = 0;
-        for(int i = 1; i <= size; i++){
-            int a = info[i-1][0];
-            int b = info[i-1][1];
-            for(int j = 0; j < m; j++){
-                dp[i][j] = Math.min(dp[i][j], dp[i-1][j] + a);
-                if(j + b < m){
-                    dp[i][j + b] = Math.min(dp[i][j + b], dp[i-1][j]);
-                }
-            }    
-        }
-        int min = INF;
-        for(int j = 0; j < m; j++){
-            min = Math.min(dp[size][j], min);
-        }
-        return min >= n ? -1 : min;
+        
+        return answer;
     }
 }
