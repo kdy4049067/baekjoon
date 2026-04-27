@@ -1,26 +1,26 @@
-import java.util.LinkedList;
-import java.util.Queue;
-
 class Solution {
     public int solution(int[] players, int m, int k) {
-        Queue<int[]> q = new LinkedList<>();
         int answer = 0;
-        int size = 0;
-
+        
+        int[] time = new int[25];
+        
         for(int i = 0; i < players.length; i++){
-            while(!q.isEmpty() && q.peek()[0] == i){
-                size -= q.poll()[1];
-
+            int num = players[i];
+            int server = num / m;
+            
+            if(server < 1) continue;
+            if(time[i] >= server) continue;
+            
+            int add = server - time[i];
+            answer += add;
+            
+            for(int j = i; j < i+k; j++){
+                if(j >= 25) break;
+                time[j] += add;
             }
-            int need = players[i] / m;
-            int more = size - need;
-            if(more < 0){
-                more = Math.abs(more);
-                size += more;
-                answer += more;
-                q.add(new int[]{i+k, more});
-            }
+            
         }
+        
         return answer;
     }
 }
