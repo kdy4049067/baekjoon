@@ -1,49 +1,43 @@
-import java.util.*;
-
 class Solution {
     public int solution(int n, int w, int num) {
-
-        int height = (n / w) + 1;
-        int[][] arr = new int[height][w];
-
-        int count = 1;
-
-        int column = 0;
+        int answer = 1;
+        
+        int[][] arr = new int[(n-1)/w+1][w];
+        int start = 1;
+        boolean toggle = true;
+        
+        for(int i = arr.length-1; i >= 0; i--){
+            if(!toggle){
+                for(int j = w-1; j >= 0; j--){
+                    arr[i][j] = start++;
+                }
+                toggle = true;
+            }
+            else{
+                for(int j = 0; j < w; j++){
+                    arr[i][j] = start++; 
+                }
+                toggle = false;
+            }
+        }
+        
+        int col = 0;
         int row = 0;
         
-        for(int i = 0; i < height; i++) {
-            if(i % 2 == 0) {
-                for(int j = 0; j < w; j++) {
-                    if(count > n) break;
-                    
-                    if(count == num) {
-                        column = i;
-                        row = j;
-                    }
-                    
-                    arr[i][j] = count++;
-                }
-                
-            } else {
-                for(int j = w-1; j >= 0; j--) {
-                    if(count > n) break;
-                    
-                    if(count == num) {
-                        column = i;
-                        row = j;
-                    }
-                    
-                    arr[i][j] = count++;
+        for(int i = 0; i < arr.length; i++){
+            for(int j = 0; j < w; j++){
+                if(arr[i][j] == num){
+                    col = i;
+                    row = j;
                 }
             }
         }
         
-        int answer = 0;
-        
-        for(int i = column; i < height; i++) {
-            if(arr[i][row] != 0) {
-                answer++;
-            }
+        while(true){
+            if(col-1 < 0) break;
+            if(arr[col-1][row] > n) break;
+            answer++;
+            col -= 1;
         }
         
         return answer;
