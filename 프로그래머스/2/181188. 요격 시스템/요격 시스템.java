@@ -1,17 +1,34 @@
-import java.util.Arrays;
+import java.util.*;
 
 class Solution {
     public int solution(int[][] targets) {
-        int index = 0;
         int answer = 0;
-        Arrays.sort(targets, (o1, o2) -> o1[1] - o2[1]);
+        
+        Arrays.sort(targets, (int[] o1, int[] o2) ->{
+            return o1[1] - o2[1];
+        });
+            
         for(int i = 0; i < targets.length; i++){
-            if(index <= targets[i][0]){
-                index = targets[i][1];
+            int target = i;
+            if(target == targets.length-1){
                 answer++;
+                break;
             }
-
+            while(true){
+                if(targets[i+1][0] < targets[target][1]){
+                    i++;
+                    if(i == targets.length-1){ 
+                        answer++;
+                        break;
+                    }
+                }
+                else{
+                    answer++;
+                    break;
+                }
+            }
         }
+        
         return answer;
     }
 }
