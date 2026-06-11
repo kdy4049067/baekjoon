@@ -1,48 +1,59 @@
-import java.util.*;
-
 class Solution {
-    public static int[] sales = {10, 20, 30, 40};  
-    public static int[] num;                       
-    public static PriorityQueue<int[]> pq;       
+    
+    private int[] sale;
+    private int[] percent = new int[]{10, 20, 30, 40};
+    private int[] answer = new int[2];
+    
     public int[] solution(int[][] users, int[] emoticons) {
-
-        num = new int[emoticons.length];
-        pq = new PriorityQueue<>(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return o1[0] == o2[0] ? o2[1] - o1[1] : o2[0] - o1[0];
-            }
-        });
-
-        perm(0, users, emoticons);
-
-        return pq.poll();
+        sale = new int[emoticons.length];
+        dfs(users, emoticons, 0);
+        
+        return answer;
     }
-
-    public void perm(int r, int[][] users, int[] emoticons) {
-
-        if(r == num.length) {
-            int service = 0;   
-            int money = 0;   
-
-            for(int i = 0; i < users.length; i ++) {
-                int sum = 0;
-                for(int e = 0; e < emoticons.length; e ++) {
-                    if(num[e] >= users[i][0]) {
-                        sum += emoticons[e] * (100 - num[e]) / 100; 
-                    }
-                }
-                if(sum >= users[i][1]) service ++;
-                else money += sum;               
-            }
-            pq.offer(new int[] {service, money});
+    
+    private void dfs(int[][] users, int[] emoticons, int start){
+        if(sale.length == start){
+            calculate(users, emoticons);
             return;
         }
-
-        for(int i = 0; i < sales.length; i++) {
-            num[r] = sales[i];
-            perm(r + 1, users, emoticons);
+        
+        for(int i = 0; i < 4; i++){
+            sale[start] = percent[i];
+            dfs(users, emoticons, start+1);
         }
+    }
+    
+    private void calculate(int[][] users, int[] emoticons){
+        int people = 0;
+        int totalPrice = 0;
+        
+        for(int i = 0; i < users.length; i++){
+            int[] userInfo = users[i];
+            int rate = userInfo[0];
+            int price = userInfo[1];
+            int sum = 0;
+            for(int j = 0; j < emoticons.length; j++){
+                int ePrice = emoticons[j];
+                int sPrice = sale[j];
 
+                if(rate <= sPrice){
+                    sum += ePrice * (100 - sPrice) * 0.01;
+                }
+                
+            }
+            
+            if(sum >= price){
+                people++;
+            }
+            else{
+                totalPrice += sum;
+            }
+        }
+        
+        if(answer[0] < people){
+            answer[0] = people;
+            answer[1] = totalPrice;
+        }
+        else if(answer[0] == people && answer[1] < totalPrice) answer[1] = totalPrice;
     }
 }
